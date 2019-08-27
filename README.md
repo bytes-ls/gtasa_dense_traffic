@@ -3,6 +3,7 @@ Cleo script for insane traffic mod
 
 This cleo script
  - Increases traffic density
+ - Makes traffic aggressive
  - Makes players car invulnerable
  - Clears memory by exploding and deleting excess car objects
 
