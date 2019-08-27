@@ -3,11 +3,12 @@
 0000:
 //-------------MAIN---------------
 
-thread 'EXTREMETRAFF' 
+thread 'KAMAKAZI' 
 5@ = 0
-20@ = 0
+0@ = False
 0A8C: write_memory 0x96914F size 1 value 1 virtual_protect 0
-:EXTREMETRAFF_19
+
+:K1
 wait 100
 
 if and
@@ -23,7 +24,7 @@ then
     099E: enable_police_patrols 1
     jump @DEL_CAR
 end
-jump @EXTREMETRAFF_19
+jump @K1
 
 
 :MY_CAR
@@ -37,8 +38,6 @@ jump @EXTREMETRAFF_19
 0001: wait 50 ms
 00A0: store_actor $PLAYER_ACTOR position_to 1@ 2@ 3@
 
- 
-
 //remove dead peds
 0AE1: $actor = random_actor_near_point 1@ 2@ 3@ in_radius 1000.0 find_next 1 pass_deads 0
 if
@@ -47,25 +46,26 @@ then
     009B:   destroy_actor $actor
 end
 
+
 if and
-    00DF:   actor $PLAYER_ACTOR driving
-    20@ == 0
+    Actor.Driving($PLAYER_ACTOR)
+    0@ == False
 then
-    20@ = 1
+    0@ = True
     jump @MY_CAR
-    
 end
 
 if
-    0449:  not actor $PLAYER_ACTOR in_a_car
+    not Actor.Driving($PLAYER_ACTOR)
 then
-    20@ == 0
+    0@ = False
 end
 
+
 if
-    20@ == 1
+    0@ == True
 then
-     02E3: 28@ = car 27@ speed
+    02E3: 28@ = car 27@ speed
     if 
         28@ <= 5.0
     then   
