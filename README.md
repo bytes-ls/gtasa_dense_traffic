@@ -1,4 +1,4 @@
-# gtasa_kamakazi_cars
+# GTA: San Andreas Kamakazi Traffic
 Cleo script for insane traffic mod
 
 This cleo script
