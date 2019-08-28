@@ -24,7 +24,7 @@ then
     // 0923: enable_air_traffic 1 
     06D0: enable_emergency_traffic 0 
     // 096A: enable_flying_helis 1 
-    099E: enable_police_patrols 1
+    099E: enable_police_patrols 0
     jump @DEL_CAR
 end
 jump @K1
@@ -32,14 +32,17 @@ jump @K1
 
 :MY_CAR
 27@ = Actor.CurrentCar($PLAYER_ACTOR)
-020A: set_car 27@ door_status_to 6
+020A: set_car 27@ door_status_to 2
     //0224: set_car 27@ health_to 1000
-02AC: set_car 27@ immunities 1 1 1 1 0 
+02AC: set_car 27@ immunities 1 1 1 1 0
+01EC: make_car 27@ very_heavy 1
 
 
 :DEL_CAR
-if 
+077E: get_active_interior_to $ACTIVE_INTERIOR
+if or 
     $ONMISSION == 1
+    $ACTIVE_INTERIOR <> 0
 then
     jump @K0
 end
@@ -65,8 +68,15 @@ end
 if
     not Actor.Driving($PLAYER_ACTOR)
 then
-    0@ = False
+    0@ = False 
 end
+
+if
+    not Actor.InCar($PLAYER_ACTOR, 27@)
+then
+    020A: set_car 27@ door_status_to 6
+end
+
 
 if
     0@ == True
@@ -89,8 +99,9 @@ if
 then
     
     09B3: get_car 4@ door_status 31@
-    if 
+    if or
         31@ == 6
+        31@ == 2
     then
         if
             0119: car 4@ wrecked
@@ -126,12 +137,15 @@ end
 
 //5@ = 0
 jump @DEL_CAR
- 
+
 :K0
-if
+wait 100
+077E: get_active_interior_to $ACTIVE_INTERIOR
+01EB: set_traffic_density_multiplier_to 1
+if and
     $ONMISSION == 0
+    $ACTIVE_INTERIOR == 0
 then
-    wait 100
     jump @K1
 end
 jump @K0
