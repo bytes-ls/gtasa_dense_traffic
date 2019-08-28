@@ -8,6 +8,9 @@ thread 'KAMAKAZI'
 0@ = False
 0A8C: write_memory 0x96914F size 1 value 1 virtual_protect 0
 
+
+
+
 :K1
 wait 100
 
@@ -35,6 +38,11 @@ jump @K1
 
 
 :DEL_CAR
+if 
+    $ONMISSION == 1
+then
+    jump @K0
+end
 0001: wait 50 ms
 00A0: store_actor $PLAYER_ACTOR position_to 1@ 2@ 3@
 
@@ -45,7 +53,6 @@ if
 then
     009B:   destroy_actor $actor
 end
-
 
 if and
     Actor.Driving($PLAYER_ACTOR)
@@ -60,7 +67,6 @@ if
 then
     0@ = False
 end
-
 
 if
     0@ == True
@@ -121,3 +127,11 @@ end
 //5@ = 0
 jump @DEL_CAR
  
+:K0
+if
+    $ONMISSION == 0
+then
+    wait 100
+    jump @K1
+end
+jump @K0
