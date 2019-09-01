@@ -3,7 +3,7 @@
 0000:
 //-------------MAIN---------------
 
-thread 'KAMAKAZI' 
+thread 'KAMAKAZE' 
 5@ = 0
 0@ = False
 //0A8C: write_memory 0x96914F size 1 value 1 virtual_protect 0   //Address for aggressive drivers
