@@ -206,10 +206,12 @@ end
         if
             not Actor.Model(9@) == 0
         then
+            00A0: store_actor 9@ position_to 19@ 20@ 21@
+            0AE2: 22@ = find_all_random_vehicles_in_sphere 19@ 20@ 21@ radius 10.0 find_next 1 skip_dead 1
             if
-                044B:  actor 9@ on_foot
+                not Actor.Driving(9@)
             then
-                05D2: AS_actor 9@ run_to_and_hijack_car 4@ max_search_radius 5.0 traffic_behavior 2
+                05D2: AS_actor 9@ run_to_and_hijack_car 24@ max_search_radius 10.0 traffic_behavior 2
             else
                 0751: AS_actor 9@ flee_from_actor 9@ run_distance 100000.0 time 999999 change_course 0 unknown 3000 5000 away_radius 2000.0
             end
