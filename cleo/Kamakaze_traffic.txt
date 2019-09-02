@@ -14,8 +14,8 @@ thread 'KAMAKAZE'
 0A8D: 25@ = read_memory 0xB74490 size 4 virtual_protect 0 //read ped pool size pointer
 25@ += 12
 
-0A8D: 22@ = read_memory 0xB74494 size 4 virtual_protect 0   //address for veh pool 
-22@ += 12                                                   // pointer for current pool size
+0A8D: 18@ = read_memory 0xB74494 size 4 virtual_protect 0   //address for veh pool 
+18@ += 12                                                   // pointer for current pool size
 
 
 
@@ -60,7 +60,7 @@ end
 
 
 0A8C: write_memory 25@ size 4 value 0 virtual_protect 0 //zero ped pool if high (seems to help?)
-0A8C: write_memory 22@ size 4 value 0 virtual_protect 0 //zero veh pool if high (seems to help?)
+0A8C: write_memory 18@ size 4 value 0 virtual_protect 0 //zero veh pool if high (seems to help?)
 
 
 00A0: store_actor $PLAYER_ACTOR position_to 1@ 2@ 3@
