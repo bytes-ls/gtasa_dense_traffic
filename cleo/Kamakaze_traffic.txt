@@ -2,6 +2,7 @@
 {$CLEO .cs}
 0000:
 //-------------MAIN---------------
+//22@ = 0xB74494  -- This is the address to the pointers of the info pool of loaded cars
 
 thread 'KAMAKAZE' 
 5@ = 0
@@ -9,25 +10,14 @@ thread 'KAMAKAZE'
 //0A8C: write_memory 0x96914F size 1 value 1 virtual_protect 0   //Address for aggressive drivers
 
 //0A8C: write_memory 0x969175 size 1 value 1 virtual_protect 0 //peds riot
+
+0A8D: 25@ = read_memory 0xB74490 size 4 virtual_protect 0 //read ped pool size pointer
+25@ += 12
+
 0A8D: 22@ = read_memory 0xB74494 size 4 virtual_protect 0   //address for veh pool 
 22@ += 12                                                   // pointer for current pool size
 
 
-//FOR LATER
-//0xB7CD9C is the address of the felony pool
-//+ 18 = Current cops in pursuit
-//+ 1A = Max number of cop cars in pursuit
-// Unsure whether these addresses apply to traffic
-// Test with cheat engine
-
-//MORE
-// 0xB7CD98 address of the player to ped pool
-// + 0x7C4 = next ped
-// + 0x46C = this peds binary state
-//      +24 = is wanted? 0 or 1 
-
-// 0xB74490   address of ped pool
-// + 12 current num of peds in pool
 
 :K1
 wait 100
@@ -39,29 +29,12 @@ if and  //If in game, start script
 then
     01EB: set_traffic_density_multiplier_to 100.0
     03DE: set_pedestrians_density_multiplier_to 0.5 
-    // 06D7: enable_train_traffic 1 
-    // 0923: enable_air_traffic 1 
     06D0: enable_emergency_traffic 0 
-    // 096A: enable_flying_helis 1 
-    099E: enable_police_patrols 1
-    
-    //These three lines are used for testing the adjustment of the max car info pool size
-    //0A8D: 23@ = read_memory 0xB74494 size 4 virtual_protect 0
-    //23@ += 8
-    //0A8C: write_memory 23@ size 4 value 110 virtual_protect 0
-    
-    
-    
+    099E: enable_police_patrols 1 
     jump @DEL_CAR
 end
 jump @K1
 
-:LOAD_ROCK //Load rocket launcher model for cops
-0247: request_model #ROCKETLA
-038B: load_requested_models
-if
-    0248: model #ROCKETLA available
-jump @DEL_CAR
 
 :MY_CAR  //Set properties of players car when they enter
 27@ = Actor.CurrentCar($PLAYER_ACTOR)
@@ -71,8 +44,11 @@ jump @DEL_CAR
 jump @DEL_CAR
 
 
-:DEL_CAR
+
+
+:DEL_CAR //Main loop
 0001: wait 10 ms
+
 077E: get_active_interior_to $ACTIVE_INTERIOR
 if or //Disable mod when indoors or on mission
     $ONMISSION == 1
@@ -82,16 +58,12 @@ then
 end
 
 
-0A8D: 25@ = read_memory 0xB74490 size 4 virtual_protect 0 //read current pool size
-25@ += 12
 
-0A8C: write_memory 25@ size 4 value 0 virtual_protect 0 //zero if high
+0A8C: write_memory 25@ size 4 value 0 virtual_protect 0 //zero ped pool if high (seems to help?)
+0A8C: write_memory 22@ size 4 value 0 virtual_protect 0 //zero veh pool if high (seems to help?)
 
 
 00A0: store_actor $PLAYER_ACTOR position_to 1@ 2@ 3@
-
-
-
 
 if and
     Actor.Driving($PLAYER_ACTOR) //Get and check bool if player driving
@@ -105,12 +77,6 @@ if
     not Actor.Driving($PLAYER_ACTOR) //Used to unlock the doors when player leaves their car
 then
     0@ = False 
-end
-
-if
-    not Actor.InCar($PLAYER_ACTOR, 27@) //Gives the car door status 6, I use this
-then                                    //To stop the car destroyer loop from killing players car
-    020A: set_car 27@ door_status_to 6  //Probably no longer necessary
 end
 
 
@@ -129,152 +95,70 @@ then
     end
 end
 
-//Randomly destroy cop cars to prevent overflow
+
+
+//Clean up dead stuff
 if
     0AE2: 4@ = find_all_random_vehicles_in_sphere 1@ 2@ 3@ radius 1500.0 find_next 1 skip_dead 0
 then
     00AE: set_car 4@ traffic_behaviour_to 3
     00AD: set_car 4@ max_speed_to 200.0
     09B3: get_car 4@ door_status 31@
-    
         
-    
     //020C: create_explosion_with_radius 13 at 6@ 7@ 8@
-    if //or
-        //31@ == 6
-        31@ == 2
+    if and
+        0119: car 4@ wrecked
+        31@ <> 2
     then
-        if and
-            0119: car 4@ wrecked
-            31@ <> 2
-        then
-            00A6: destroy_car 4@
-            //5@ -= 1
-            //0A8C: write_memory 0x18A8D54 size 4 value 5@ virtual_protect 0
-        end
-        jump @DEL_CAR
-    else
-        00AA: store_car 4@ position_to 6@ 7@ 8@
-  
-        
-        if
-            0119: car 4@ wrecked
-        then
-            00A6: destroy_car 4@
-            //5@ -= 1
-            //0A8C: write_memory 0x18A8D54 size 4 value 5@ virtual_protect 0
-        else 
-            if or
-                // 5@ > 75
-                Car.Model(4@) == #COPCARLA
-                Car.Model(4@) == #COPCARRU
-                Car.Model(4@) == #COPCARSF
-                Car.Model(4@) == #COPCARVG
-            then
-                //if 
-                //    5@ <= 5
-                //then
-                //    5@ += 1
-                    //020A: set_car 4@ door_status_to 6
-                //else
-                //0A8C: write_memory 22@ size 4 value 80 virtual_protect 0
-                    //020C: create_explosion_with_radius 7 at 6@ 7@ 8@
-                    //00A6: destroy_car 4@
-                    //Car.RemoveReferences(4@)
-                    //Car.Destroy(4@)
-                    
-                //    5@ -= 1
-                //5@ -= 1
-                //0A8C: write_memory 0x18A8D54 size 4 value 5@ virtual_protect 0
-                //end
-            end
-            
-        end
-    end        
+        00A6: destroy_car 4@
+    end       
 end
 
-//remove dead peds, remove/add weapons to cops
-//0AE2: 4@ = find_all_random_vehicles_in_sphere 1@ 2@ 3@ radius 1000.0 find_next 1 skip_dead 0
+
+//Peds jack cars if not in them, flee if in them
 0AE1: 9@ = random_actor_near_point 1@ 2@ 3@ in_radius 1000.0 find_next 1 pass_deads 0
+if
+    0118:   actor 9@ dead
+    //not Actor.Driving(9@)
+then
+    Actor.DestroyInstantly(9@)
+else 
+    //074F:   actor 9@ ped_event = 31
     if
-        0118:   actor 9@ dead
-        //not Actor.Driving(9@)
+        not Actor.Model(9@) == 0
     then
-        Actor.DestroyInstantly(9@)
-    else 
-        //074F:   actor 9@ ped_event = 31
         if
-            not Actor.Model(9@) == 0
+            not Actor.Driving(9@)
         then
             00A0: store_actor 9@ position_to 19@ 20@ 21@
             0AE2: 22@ = find_all_random_vehicles_in_sphere 19@ 20@ 21@ radius 10.0 find_next 1 skip_dead 1
-            if
-                not Actor.Driving(9@)
-            then
-                05D2: AS_actor 9@ run_to_and_hijack_car 24@ max_search_radius 10.0 traffic_behavior 2
-            else
-                0751: AS_actor 9@ flee_from_actor 9@ run_distance 100000.0 time 999999 change_course 0 unknown 3000 5000 away_radius 2000.0
-            end
+            05D2: AS_actor 9@ run_to_and_hijack_car 24@ max_search_radius 10.0 traffic_behavior 2
+        else
+            0751: AS_actor 9@ flee_from_actor 9@ run_distance 100000.0 time 999999 change_course 0 unknown 3000 5000 away_radius 2000.0
         end
         
-        
-        if //Give Cops RL
-            0248: model #ROCKETLA available //Makes sure rocket launcher model is loaded
-        else_jump @LOAD_ROCK
-        
-        if or         //Check if model is any cop
-            Actor.Model(9@) == #LAPD1
-            Actor.Model(9@) == #SFPD1
-            Actor.Model(9@) == #LVPD1
-            Actor.Model(9@) == #CSHER
-            Actor.Model(9@) == #SWAT
-            Actor.Model(9@) == #FBI
-            Actor.Model(9@) == #DSHER
-        then
-            if
-                0491: actor 9@ has_weapon 22 //Remove Colt45 from cop, just to free memory
-            then 
-                0555: remove_weapon 22 from_actor 9@
-            end
-            if
-                0491: actor 9@ has_weapon 3     //Remove night stick from cops, same reason
-            then 
-                0555: remove_weapon 3 from_actor 9@
-            end
-            
-            //if
-             //   0491: actor 9@ has_weapon 35 //Give them RPGs instead, just for shits
-            //then
-            //    01B9: set_actor 9@ armed_weapon_to 35
-            //else 
-             //   01B2: give_actor 9@ weapon 35 ammo 1 // Load the weapon model before using this
-                //Actor.GiveWeaponAndAmmo(9@,35, 0)
-            //end
-            
-            //if
-            //    044B:  actor 9@ on_foot //If the cop is on foot
-            //then
-            //    if
-            //        02D8:   actor 9@ current_weapon <> 35      //Switch weapons -- probably not neccesary, needs testing
-            //    then
-            //        01B9: set_actor 9@ armed_weapon_to 35
-            //    end
-            //end
-        
+        if 
+            0491: actor 9@ has_weapon 22 //Remove Colt45 from cop, just to free memory
+        then 
+            0555: remove_weapon 22 from_actor 9@
         end
-            
-    end
+        
+        if
+            0491: actor 9@ has_weapon 3     //Remove night stick from cops, same reason
+        then 
+            0555: remove_weapon 3 from_actor 9@
+        end        
+    end        
+end
 
-//22@ = 0xB74494  -- This is the address to the pointers of the info pool of loaded cars
-
-//wait 10 
-//5@ = 0
 jump @DEL_CAR
+
+
 
 :K0   //Disables mod when indoors or on mission
 wait 100
 077E: get_active_interior_to $ACTIVE_INTERIOR
-01EB: set_traffic_density_multiplier_to 1
+01EB: set_traffic_density_multiplier_to 1.0
 
 if and
     $ONMISSION == 0
