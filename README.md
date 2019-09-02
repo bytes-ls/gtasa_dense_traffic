@@ -3,6 +3,7 @@ Cleo script for insane traffic mod
 
 [Video Demo](https://youtu.be/fB4PMy35RpI)
 
+![Screenshot](https://raw.githubusercontent.com/bytes-ls/gtasa_kamakaze_cars/master/screenshot.png)
 
 This cleo script
  - Increases traffic density
