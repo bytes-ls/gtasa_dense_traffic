@@ -5,7 +5,7 @@
 //22@ = 0xB74494  -- This is the address to the pointers of the info pool of loaded cars
 
 thread 'KAMAKAZE' 
-5@ = 0
+5@ = False
 0@ = False
 //0A8C: write_memory 0x96914F size 1 value 1 virtual_protect 0   //Address for aggressive drivers
 
@@ -27,7 +27,7 @@ if and  //If in game, start script
     $ONMISSION == 0
     $ACTIVE_INTERIOR == 0
 then
-    01EB: set_traffic_density_multiplier_to 100.0
+    01EB: set_traffic_density_multiplier_to 250.0
     03DE: set_pedestrians_density_multiplier_to 0.5 
     06D0: enable_emergency_traffic 0 
     099E: enable_police_patrols 1 
@@ -45,6 +45,25 @@ jump @DEL_CAR
 
 
 
+:AGG_DRIVERS
+0A8D: $result = read_memory 0x96914F size 1 value 1 virtual_protect 0
+if
+    $result == 1
+then
+    0A8C: write_memory 0x96914F size 1 value 0 virtual_protect 0
+    if
+        5@ == False
+    then
+        5@ = True
+    else
+        5@ = False
+    end
+end
+jump @DEL_CAR
+
+
+
+
 
 :DEL_CAR //Main loop
 0001: wait 10 ms
@@ -56,8 +75,6 @@ if or //Disable mod when indoors or on mission
 then
     jump @K0
 end
-
-
 
 0A8C: write_memory 25@ size 4 value 0 virtual_protect 0 //zero ped pool if high (seems to help?)
 0A8C: write_memory 18@ size 4 value 0 virtual_protect 0 //zero veh pool if high (seems to help?)
@@ -73,10 +90,12 @@ then
     jump @MY_CAR
 end
 
-if
+if and
     not Actor.Driving($PLAYER_ACTOR) //Used to unlock the doors when player leaves their car
+    0@ == True
 then
-    0@ = False 
+    0@ = False
+    020A: set_car 27@ door_status_to 6 
 end
 
 
@@ -101,8 +120,12 @@ end
 if
     0AE2: 4@ = find_all_random_vehicles_in_sphere 1@ 2@ 3@ radius 1500.0 find_next 1 skip_dead 0
 then
-    00AE: set_car 4@ traffic_behaviour_to 3
-    00AD: set_car 4@ max_speed_to 200.0
+    if
+        5@ == True //For aggressive cars cheat
+    then
+        00AE: set_car 4@ traffic_behaviour_to 3
+        00AD: set_car 4@ max_speed_to 200.0
+    end
     09B3: get_car 4@ door_status 31@
         
     //020C: create_explosion_with_radius 13 at 6@ 7@ 8@
@@ -116,42 +139,54 @@ end
 
 
 //Peds jack cars if not in them, flee if in them
-0AE1: 9@ = random_actor_near_point 1@ 2@ 3@ in_radius 1000.0 find_next 1 pass_deads 0
+0AE1: 9@ = random_actor_near_point 1@ 2@ 3@ in_radius 1500.0 find_next 1 pass_deads 0
 if
     0118:   actor 9@ dead
     //not Actor.Driving(9@)
 then
     Actor.DestroyInstantly(9@)
 else 
-    //074F:   actor 9@ ped_event = 31
-    if
+    //Make traffic wild when aggression cheat activated
+    if and
         not Actor.Model(9@) == 0
+        5@ == True 
     then
-        if
-            not Actor.Driving(9@)
-        then
-            00A0: store_actor 9@ position_to 19@ 20@ 21@
-            0AE2: 22@ = find_all_random_vehicles_in_sphere 19@ 20@ 21@ radius 10.0 find_next 1 skip_dead 1
-            05D2: AS_actor 9@ run_to_and_hijack_car 24@ max_search_radius 10.0 traffic_behavior 2
+        if and
+            //Check if model is any cop
+            not Actor.Model(9@) == #LAPD1
+            not Actor.Model(9@) == #SFPD1
+            not Actor.Model(9@) == #LVPD1
+            not Actor.Model(9@) == #CSHER
+            not Actor.Model(9@) == #SWAT
+            not Actor.Model(9@) == #FBI
+            not Actor.Model(9@) == #DSHER
+        then    
+            if
+                not Actor.Driving(9@)
+            then
+                00A0: store_actor 9@ position_to 19@ 20@ 21@
+                0AE2: 22@ = find_all_random_vehicles_in_sphere 19@ 20@ 21@ radius 10.0 find_next 1 skip_dead 1
+                05D2: AS_actor 9@ run_to_and_hijack_car 24@ max_search_radius 10.0 traffic_behavior 2
+            else
+                0751: AS_actor 9@ flee_from_actor 9@ run_distance 100000.0 time 999999 change_course 0 unknown 3000 5000 away_radius 2000.0
+            end
         else
-            0751: AS_actor 9@ flee_from_actor 9@ run_distance 100000.0 time 999999 change_course 0 unknown 3000 5000 away_radius 2000.0
-        end
-        
-        if 
-            0491: actor 9@ has_weapon 22 //Remove Colt45 from cop, just to free memory
-        then 
-            0555: remove_weapon 22 from_actor 9@
-        end
-        
-        if
-            0491: actor 9@ has_weapon 3     //Remove night stick from cops, same reason
-        then 
-            0555: remove_weapon 3 from_actor 9@
-        end        
+            if 
+                0491: actor 9@ has_weapon 22 //Remove Colt45 from cop, just to free memory
+            then 
+                0555: remove_weapon 22 from_actor 9@
+            end
+            
+            if
+                0491: actor 9@ has_weapon 3     //Remove night stick from cops, same reason
+            then 
+                0555: remove_weapon 3 from_actor 9@
+            end 
+        end       
     end        
 end
 
-jump @DEL_CAR
+jump @AGG_DRIVERS
 
 
 
