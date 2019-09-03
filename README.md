@@ -6,18 +6,21 @@ Cleo script for insane traffic mod
 ![Screenshot](https://raw.githubusercontent.com/bytes-ls/gtasa_kamakaze_cars/master/screenshot.png)
 
 This cleo script
- - Increases traffic density
- - Makes traffic aggressive
+ - Increases traffic density to max possible
+ - Works with aggressive traffic cheat
  - Makes players car invulnerable
  - Instantly deletes dead peds and cars
 
 Latest update:
- - Peds on foot try to jack vehicles
- - Peds in cars are constantly fleeing themselves
- - Traffic and ped density increased further
- - Script now disabled during mission (easy to change!)
- - Players car is now heavier than other traffic
- - Game no longer crashes when players car hits water
+ - With Agressive Traffic cheat on:
+   - Peds on foot try to jack vehicles
+   - Peds in cars are constantly fleeing themselves
+ 
+ - With and without Agressive Traffic cheat on:
+   - Traffic and ped density increased
+   - Script disabled during mission (easy to change!)
+   - Players car is heavier than other traffic
+   - Constantly empties vehicle and ped mempool
 
 Installation
  - Make sure you are running the version 1 exe
@@ -28,6 +31,5 @@ Installation
 
 Notes
  - You can usually play for a long time, but it's not entirely stable. Game will crash every so often, and I haven't tested it with the LimitAdjuster script
- - Don't try to run the game with the Aggressive Drivers cheat on. It makes all the peds wanted and all those cops will surely crash the game. Again, LimitAdjuster might fix   this. 
 
-For even more fun, use the supplied handling.cfg to give cars insane stats
+For even more fun, use the supplied handling.cfg to give cars insane stats - completely optional!
