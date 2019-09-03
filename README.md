@@ -26,7 +26,7 @@ Installation
  - Make sure you are running the version 1 exe
  - Download and install Cleo
  - Download and install SilentPatch
- - Move Kamakaze_cars.cs to your GTA San Andreas/cleo folder
+ - Move [Kamakaze_cars.cs](https://github.com/bytes-ls/gtasa_kamakaze_cars/raw/master/cleo/Kamakaze_traffic.cs) to your GTA San Andreas/cleo folder
  - Play and enjoy!
 
 Notes
