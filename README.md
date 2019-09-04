@@ -12,11 +12,11 @@ This cleo script
  - Instantly deletes dead peds and cars
 
 Latest update:
- - With Agressive Traffic cheat on:
+ - With Aggressive Traffic cheat on:
    - Peds on foot try to jack vehicles
    - Peds in cars are constantly fleeing themselves
  
- - With and without Agressive Traffic cheat on:
+ - With and without Aggressive Traffic cheat on:
    - Traffic and ped density increased
    - Script disabled during mission (easy to change!)
    - Players car is heavier than other traffic
