@@ -1,4 +1,4 @@
-# GTA: San Andreas Kamakaze Traffic
+# GTA: San Andreas Dense Traffic
 Cleo script for insane traffic mod
 
 [Video Demo](https://youtu.be/fB4PMy35RpI)
