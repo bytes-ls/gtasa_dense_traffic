@@ -27,7 +27,7 @@ if and  //If in game, start script
     $ONMISSION == 0
     $ACTIVE_INTERIOR == 0
 then
-    01EB: set_traffic_density_multiplier_to 250.0
+    01EB: set_traffic_density_multiplier_to 150.0
     03DE: set_pedestrians_density_multiplier_to 0.5 
     06D0: enable_emergency_traffic 0 
     099E: enable_police_patrols 1 
@@ -165,8 +165,8 @@ else
                 not Actor.Driving(9@)
             then
                 00A0: store_actor 9@ position_to 19@ 20@ 21@
-                0AE2: 22@ = find_all_random_vehicles_in_sphere 19@ 20@ 21@ radius 10.0 find_next 1 skip_dead 1
-                05D2: AS_actor 9@ run_to_and_hijack_car 24@ max_search_radius 10.0 traffic_behavior 2
+                //0AE2: 22@ = find_all_random_vehicles_in_sphere 19@ 20@ 21@ radius 10.0 find_next 1 skip_dead 1
+                05D2: AS_actor 9@ run_to_and_hijack_car 0 max_search_radius 10.0 traffic_behavior 2
             else
                 0751: AS_actor 9@ flee_from_actor 9@ run_distance 100000.0 time 999999 change_course 0 unknown 3000 5000 away_radius 2000.0
             end
