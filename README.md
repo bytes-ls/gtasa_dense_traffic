@@ -27,6 +27,8 @@ Installation
  - Download and install Cleo
  - Download and install SilentPatch
  - Move [Kamakaze_cars.cs](https://github.com/bytes-ls/gtasa_kamakaze_cars/raw/master/cleo/Kamakaze_traffic.cs) to your GTA San Andreas/cleo folder
+ - Start the mod by entering the Agressive Cheat code
+   - YLTEICZ 
  - Play and enjoy!
 
 Notes
